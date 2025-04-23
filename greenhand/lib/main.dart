@@ -13,7 +13,7 @@ void main() async {
 void testFirestoreWrite() async {
   try {
     await FirebaseFirestore.instance.collection('testCollection').add({
-      'timestamp': DateTime.now().toString(),
+      'timestamp': "App initialized: ${DateTime.now()}",
     });
     print('✅ Firestore write successful');
   } catch (e) {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "274942893578",
+    "project_id": "greenhand-510fe",
+    "storage_bucket": "greenhand-510fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274942893578:android:fe956abf684215f46989f3",
+        "android_client_info": {
+          "package_name": "com.example.greenhand"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsDA7LBSJ7O7_06zWX9zjNL1BWsa3jvG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

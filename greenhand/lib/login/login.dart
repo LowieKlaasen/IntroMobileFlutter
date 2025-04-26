@@ -1,4 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:greenhand/firebase_options.dart';
+import 'package:greenhand/login/signIn.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -29,7 +32,10 @@ class LoginScreen extends StatelessWidget {
               width: 200, // Set a fixed width for the button
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle Sign In action
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Signin()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF636B2F), // Olive green color
@@ -79,6 +85,8 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MaterialApp(home: LoginScreen()));
 }

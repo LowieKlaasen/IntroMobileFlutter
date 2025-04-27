@@ -1,26 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:greenhand/firebase_options.dart';
-import 'package:greenhand/login.dart';
+import 'package:greenhand/login/login.dart';
 
-class Signin extends StatefulWidget {
-  const Signin({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
   @override
-  _SigninState createState() => _SigninState();
+  _SignupState createState() => _SignupState();
 }
 
-class _SigninState extends State<Signin> {
+class _SignupState extends State<Signup> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -64,7 +68,7 @@ class _SigninState extends State<Signin> {
                 Padding(
                   padding: EdgeInsets.only(left: 30),
                   child: Text(
-                    "Welcome back!",
+                    "Sign Up",
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -75,7 +79,7 @@ class _SigninState extends State<Signin> {
                 Padding(
                   padding: EdgeInsets.only(left: 30),
                   child: Text(
-                    "Sign in to your account",
+                    "Create a new account",
                     style: TextStyle(
                       fontSize: 20,
                       fontStyle: FontStyle.italic,
@@ -83,7 +87,29 @@ class _SigninState extends State<Signin> {
                     ),
                   ),
                 ),
-                SizedBox(height: 60),
+                SizedBox(height: 30),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "Name",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Your name",
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
                 Padding(
                   padding: EdgeInsets.only(left: 30),
                   child: Text(
@@ -105,7 +131,7 @@ class _SigninState extends State<Signin> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Padding(
                   padding: EdgeInsets.only(left: 30),
                   child: Text(
@@ -128,6 +154,29 @@ class _SigninState extends State<Signin> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "Confirm password",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: confirmPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Confirm password",
+                    ),
+                  ),
+                ),
                 SizedBox(height: 100),
                 Padding(
                   padding: EdgeInsets.only(left: 30, right: 30),
@@ -135,10 +184,12 @@ class _SigninState extends State<Signin> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        signIn(
+                        signUp(
                           context,
+                          nameController.text,
                           emailController.text,
                           passwordController.text,
+                          confirmPasswordController.text,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -149,7 +200,7 @@ class _SigninState extends State<Signin> {
                         padding: EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Text(
-                        "Log In",
+                        "Register",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -164,27 +215,47 @@ class _SigninState extends State<Signin> {
   }
 }
 
-final FirebaseAuth auth = FirebaseAuth.instance;
+Future<void> signUp(
+  BuildContext context,
+  String name,
+  String email,
+  String password,
+  String passwordAgain,
+) async {
+  // 1. Check if passwords match
+  if (password != passwordAgain) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Passwords do not match')));
+    return;
+  }
 
-Future<void> signIn(BuildContext context, String email, String password) async {
+  // 2. Check if email is already in use
+  // 3. Create user (firebase auth)
+
   try {
-    final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    final credential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
 
-    // ToDo: Navigate to Dashboard
+    await credential.user?.updateDisplayName(name);
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
     );
-  } on FirebaseAuthException catch (e) {
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Account created succesfully')));
+  } on FirebaseAuthException catch (ex) {
     String errorMessage;
 
-    if (e.code == 'user-not-found') {
-      errorMessage = 'No user found for that email.';
-    } else if (e.code == 'wrong-password') {
-      errorMessage = 'Wrong password provided for that user.';
+    if (ex.code == 'email-already-in-use') {
+      errorMessage = 'Already an account with that email address';
+    } else if (ex.code == 'invalid-email') {
+      errorMessage = 'Please enter a valid email';
+    } else if (ex.code == 'weak-password') {
+      errorMessage = 'Please enter a stronger password';
     } else {
       errorMessage = 'An error occurred. Please try again later';
     }
@@ -192,11 +263,17 @@ Future<void> signIn(BuildContext context, String email, String password) async {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(errorMessage)));
+  } catch (unexpectedError) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('An unexpected error occurred. Please try again later'),
+      ),
+    );
   }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MaterialApp(home: Signin()));
+  runApp(MaterialApp(home: Signup()));
 }

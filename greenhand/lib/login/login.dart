@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:greenhand/firebase_options.dart';
 import 'package:greenhand/login/signIn.dart';
+import 'package:greenhand/login/signup.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -58,7 +59,10 @@ class LoginScreen extends StatelessWidget {
               width: 200, // Set the same fixed width for consistency
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle New User action
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Signup()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[300], // Light grey color

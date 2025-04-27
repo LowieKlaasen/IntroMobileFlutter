@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:greenhand/firebase_options.dart';
+import 'package:greenhand/home.dart';
 import 'package:greenhand/login.dart';
 
 class Signin extends StatefulWidget {
@@ -176,7 +177,7 @@ Future<void> signIn(BuildContext context, String email, String password) async {
     // ToDo: Navigate to Dashboard
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => Home()),
     );
   } on FirebaseAuthException catch (e) {
     String errorMessage;

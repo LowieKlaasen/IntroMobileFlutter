@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:greenhand/login/login.dart';
 
@@ -10,29 +9,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
-}
-
-final FirebaseAuth auth = FirebaseAuth.instance;
-
-Future<void> createUserWithEmailAndPassword(
-  String email,
-  String password,
-) async {
-  try {
-    UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    // print('User created: ${userCredential.user!.uid}');
-  } on FirebaseAuthException catch (e) {
-    if (e.code == 'weak-password') {
-      // print('The password provided is too weak.');
-    } else if (e.code == 'email-already-in-use') {
-      // print('The account already exists for that email.');
-    }
-  } catch (e) {
-    // print(e);
-  }
 }
 
 // Firestore Test

@@ -1,0 +1,109 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:greenhand/firebase_options.dart';
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white, // Match background
+        statusBarIconBrightness: Brightness.dark, // Black icons
+        statusBarBrightness: Brightness.light, // For iOS
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "Home",
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 100),
+            Image(
+              image: AssetImage("assets/icon/GreenHand_Logo.png"),
+              width: screenWidth * 0.4,
+            ),
+            SizedBox(height: 100),
+            ElevatedButton(
+              onPressed: () {
+                // ToDo: Navigate
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF636B2F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(7)),
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: 15,
+                ), // Only vertical padding
+              ),
+              child: SizedBox(
+                width: screenWidth * 0.65, // Set a fixed width for both buttons
+                child: Center(
+                  child: Text(
+                    "Search in area",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // ToDo: Navigate
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF636B2F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(7)),
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: 15,
+                ), // Only vertical padding
+              ),
+              child: SizedBox(
+                width: screenWidth * 0.65, // Same fixed width for consistency
+                child: Center(
+                  child: Text(
+                    "Rent out",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(MaterialApp(home: Home()));
+}

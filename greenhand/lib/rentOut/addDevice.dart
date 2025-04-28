@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:greenhand/rentOut/rentOutDashboard.dart';
 import 'package:greenhand/services/firestoreService.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class Adddevice extends StatefulWidget {
@@ -22,6 +27,10 @@ class _AddDeviceState extends State<Adddevice> {
   DateTime? startDate;
   DateTime? endDate;
 
+  bool formComplete = false;
+
+  XFile? deviceImage;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +42,10 @@ class _AddDeviceState extends State<Adddevice> {
       ),
     );
     fetchCategories();
+
+    nameController.addListener(validateForm);
+    descriptionController.addListener(validateForm);
+    priceController.addListener(validateForm);
   }
 
   Future<void> fetchCategories() async {
@@ -40,6 +53,35 @@ class _AddDeviceState extends State<Adddevice> {
     setState(() {
       categories = options;
     });
+  }
+
+  void validateForm() {
+    setState(() {
+      formComplete =
+          nameController.text.isNotEmpty &&
+          descriptionController.text.isNotEmpty &&
+          priceController.text.isNotEmpty &&
+          selectedCategory != null &&
+          startDate != null &&
+          endDate != null;
+    });
+  }
+
+  Future<void> pickImage(ImageSource source) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: source);
+
+      if (image != null) {
+        setState(() {
+          deviceImage = image;
+        });
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to pick image: $error")));
+    }
   }
 
   @override
@@ -84,6 +126,33 @@ class _AddDeviceState extends State<Adddevice> {
               GestureDetector(
                 onTap: () {
                   // ToDo: Add photo/open camera
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return SafeArea(
+                        child: Wrap(
+                          children: <Widget>[
+                            ListTile(
+                              leading: Icon(Icons.camera),
+                              title: Text("Take a photo"),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                pickImage(ImageSource.camera);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.photo_library),
+                              title: Text("Choose from gallery"),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                pickImage(ImageSource.gallery);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   width: double.infinity,
@@ -92,25 +161,41 @@ class _AddDeviceState extends State<Adddevice> {
                     color: Color.fromARGB(75, 99, 107, 47),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.add_a_photo,
-                          color: Color(0xFF636B2F),
-                          size: 30,
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          "add photo",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 77, 77, 77),
+                  child:
+                      deviceImage != null
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              File(deviceImage!.path),
+                              width: double.infinity,
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                          : Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.add_a_photo,
+                                  color: Color(0xFF636B2F),
+                                  size: 30,
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  "add photo",
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(
+                                      255,
+                                      77,
+                                      77,
+                                      77,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -154,6 +239,7 @@ class _AddDeviceState extends State<Adddevice> {
                     onChanged: (String? newValue) {
                       setState(() {
                         selectedCategory = newValue;
+                        validateForm();
                       });
                     },
                     dropdownColor: Colors.white,
@@ -241,6 +327,7 @@ class _AddDeviceState extends State<Adddevice> {
                         if (pickedDate != null) {
                           setState(() {
                             startDate = pickedDate;
+                            validateForm();
                           });
                         }
                       },
@@ -284,6 +371,7 @@ class _AddDeviceState extends State<Adddevice> {
                         if (pickedDate != null) {
                           setState(() {
                             endDate = pickedDate;
+                            validateForm();
                           });
                         }
                       },
@@ -311,9 +399,82 @@ class _AddDeviceState extends State<Adddevice> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // ToDo: Add device to db
-                  },
+                  onPressed:
+                      formComplete
+                          ? () async {
+                            try {
+                              // 1. Price --> double
+                              double? price = double.tryParse(
+                                priceController.text.replaceAll(',', '.'),
+                              );
+
+                              // 2. User ID
+                              var userId =
+                                  FirebaseAuth.instance.currentUser?.uid;
+                              // (Temp ID for testing)
+                              userId ??= "-12";
+
+                              // 3. Upload image
+                              String? imageUrl;
+                              if (deviceImage != null) {
+                                imageUrl = await _firestoreService.uploadImage(
+                                  deviceImage!,
+                                );
+                                if (imageUrl == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Failed to upload image"),
+                                    ),
+                                  );
+                                  imageUrl = "";
+                                }
+                              }
+
+                              // 4. Device object
+                              final device = {
+                                "name": nameController.text,
+                                "description": descriptionController.text,
+                                "price": price,
+                                "category": selectedCategory,
+                                "startDate": startDate!.toIso8601String(),
+                                "endDate": endDate!.toIso8601String(),
+                                "userId": userId,
+                                "imageUrl": imageUrl,
+                              };
+
+                              // 5. Send to service
+                              await _firestoreService.addDevice(device);
+
+                              // 6. Success
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Device added successfully"),
+                                ),
+                              );
+
+                              // 7. Clear form
+                              setState(() {
+                                nameController.clear();
+                                descriptionController.clear();
+                                priceController.clear();
+                                selectedCategory = null;
+                                startDate = null;
+                                endDate = null;
+                                deviceImage = null;
+                              });
+
+                              // ToDo: Enable navigation
+                              // 8. Navigate
+                              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Rentoutdashboard()));
+                            } catch (error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Failed to add device: $error"),
+                                ),
+                              );
+                            }
+                          }
+                          : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF636B2F),
                     shape: RoundedRectangleBorder(

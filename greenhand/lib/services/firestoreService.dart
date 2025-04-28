@@ -13,4 +13,12 @@ class FirestoreService {
       return [];
     }
   }
+
+  Future<void> addDevice(Map<String, dynamic> device) async {
+    try {
+      await _firestore.collection('devices').add(device);
+    } catch (error) {
+      throw Exception("Error adding device: $error");
+    }
+  }
 }

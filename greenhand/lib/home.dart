@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:greenhand/firebase_options.dart';
+import 'package:greenhand/rentOut/rentOutDashboard.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -73,7 +74,10 @@ class _HomeState extends State<Home> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // ToDo: Navigate
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Rentoutdashboard()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF636B2F),

@@ -222,16 +222,12 @@ Future<void> signUp(
   String password,
   String passwordAgain,
 ) async {
-  // 1. Check if passwords match
   if (password != passwordAgain) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Passwords do not match')));
     return;
   }
-
-  // 2. Check if email is already in use
-  // 3. Create user (firebase auth)
 
   try {
     final credential = await FirebaseAuth.instance

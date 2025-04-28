@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,18 @@ class FirestoreService {
       return categories.docs.map((doc) => doc['name'] as String).toList();
     } catch (error) {
       print('Error fetching categories: $error');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchCategoriesWithIcons() async {
+    try {
+      final snapshot = await _firestore.collection('categories').get();
+      return snapshot.docs.map((doc) {
+        return {'name': doc['name'], 'icon': doc['icon']};
+      }).toList();
+    } catch (error) {
+      print("Error getting categories with their icons: $error");
       return [];
     }
   }

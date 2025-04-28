@@ -125,7 +125,6 @@ class _AddDeviceState extends State<Adddevice> {
               SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
-                  // ToDo: Add photo/open camera
                   showModalBottomSheet(
                     context: context,
                     builder: (BuildContext context) {
@@ -198,6 +197,8 @@ class _AddDeviceState extends State<Adddevice> {
                           ),
                 ),
               ),
+              SizedBox(height: 20),
+              // ToDo: Implement location
               SizedBox(height: 20),
               Row(
                 children: [

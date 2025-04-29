@@ -55,4 +55,57 @@ class FirestoreService {
       return null;
     }
   }
+
+  Future<Map<String, String>> fetchUserName(String userId) async {
+    try {
+      final snapshot =
+          await _firestore
+              .collection('users')
+              .where('auth_id', isEqualTo: userId)
+              .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final doc = snapshot.docs.first;
+        return {'firstName': doc['firstName'], 'lastName': doc['lastName']};
+      } else {
+        return {};
+      }
+    } catch (error) {
+      print("Error fetching user");
+      return {};
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchItemsByCategory(
+    String category,
+  ) async {
+    try {
+      final snapshot =
+          await _firestore
+              .collection('devices')
+              .where('category', isEqualTo: category)
+              .get();
+
+      return await Future.wait(
+        snapshot.docs.map((doc) async {
+          final userName = await fetchUserName(doc['userId']);
+
+          return {
+            'name': doc['name'],
+            'description': doc['description'],
+            'price': doc['price'],
+            'startDate': doc['startDate'],
+            'endDate': doc['endDate'],
+            'imageUrl': doc['imageUrl'],
+            'user_firstName': userName['firstName'] ?? '',
+            'user_lastName': userName['lastName'] ?? '',
+            'id': doc.id,
+          };
+        }).toList(),
+      );
+    } catch (error) {
+      print('Error fetching items by category: $error');
+      return [];
+    }
+  }
 }

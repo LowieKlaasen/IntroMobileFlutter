@@ -73,7 +73,6 @@ class _CategoryListState extends State<CategoryListWidget> {
   }
 
   IconData getIconFromName(String iconName) {
-    // Map Firestore icon names to Flutter Icons
     switch (iconName) {
       case 'kitchen':
         return Icons.kitchen;
@@ -88,7 +87,7 @@ class _CategoryListState extends State<CategoryListWidget> {
       case 'forest_outlined':
         return Icons.forest_outlined;
       default:
-        return Icons.help_outline; // Default icon if no match is found
+        return Icons.help_outline;
     }
   }
 
@@ -143,7 +142,6 @@ class _CategoryListState extends State<CategoryListWidget> {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Firebase.initializeApp();
   runApp(MaterialApp(home: CategoryPicker()));
 }

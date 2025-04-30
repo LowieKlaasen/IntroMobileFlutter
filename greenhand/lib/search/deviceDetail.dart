@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class DeviceDetail extends StatefulWidget {
   final Map<String, dynamic> device;
@@ -41,8 +43,7 @@ class _DeviceDetailState extends State<DeviceDetail> {
           // Main Content
           SingleChildScrollView(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Align content to the left
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Device Image
                 ClipRRect(
@@ -127,18 +128,49 @@ class _DeviceDetailState extends State<DeviceDetail> {
                         ),
                       ),
                       SizedBox(height: 8),
+                      // OpenStreetMap Minimap
                       Container(
                         height: 150,
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.grey[300],
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.map,
-                            size: 50,
-                            color: Colors.grey[600],
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            8,
+                          ), // Set the corner radius
+                          child: FlutterMap(
+                            options: MapOptions(
+                              center: LatLng(
+                                widget.device['latitude'] ??
+                                    51.509865, // Default latitude
+                                widget.device['longitude'] ??
+                                    -0.118092, // Default longitude
+                              ),
+                              zoom: 13.0,
+                            ),
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                subdomains: ['a', 'b', 'c'],
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 80.0,
+                                    height: 80.0,
+                                    point: LatLng(
+                                      widget.device['latitude'] ?? 51.509865,
+                                      widget.device['longitude'] ?? -0.118092,
+                                    ),
+                                    builder:
+                                        (ctx) => Icon(
+                                          Icons.location_pin,
+                                          color: Colors.red,
+                                          size: 40,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),

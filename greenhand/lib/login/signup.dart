@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -21,7 +23,8 @@ class _SignupState extends State<Signup> {
 
   @override
   void dispose() {
-    nameController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
@@ -91,7 +94,7 @@ class _SignupState extends State<Signup> {
                 Padding(
                   padding: EdgeInsets.only(left: 30),
                   child: Text(
-                    "Name",
+                    "First Name",
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -102,10 +105,32 @@ class _SignupState extends State<Signup> {
                 Padding(
                   padding: EdgeInsets.only(top: 5, left: 30, right: 30),
                   child: TextField(
-                    controller: nameController,
+                    controller: firstNameController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Your name",
+                      hintText: "First name",
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "Last Name",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: lastNameController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Last name",
                     ),
                   ),
                 ),
@@ -186,7 +211,8 @@ class _SignupState extends State<Signup> {
                       onPressed: () {
                         signUp(
                           context,
-                          nameController.text,
+                          firstNameController.text,
+                          lastNameController.text,
                           emailController.text,
                           passwordController.text,
                           confirmPasswordController.text,
@@ -217,7 +243,8 @@ class _SignupState extends State<Signup> {
 
 Future<void> signUp(
   BuildContext context,
-  String name,
+  String firstName,
+  String lastName,
   String email,
   String password,
   String passwordAgain,
@@ -233,7 +260,17 @@ Future<void> signUp(
     final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
-    await credential.user?.updateDisplayName(name);
+    await credential.user?.updateDisplayName(firstName);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(credential.user?.uid)
+        .set({
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'userUID': credential.user?.uid,
+        });
 
     Navigator.pushReplacement(
       context,

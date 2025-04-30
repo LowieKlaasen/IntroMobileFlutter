@@ -45,7 +45,6 @@ class _DeviceDetailState extends State<DeviceDetail> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Device Image
                 ClipRRect(
                   child: Image.network(
                     widget.device['imageUrl'] ??
@@ -133,18 +132,14 @@ class _DeviceDetailState extends State<DeviceDetail> {
                         height: 150,
                         width: double.infinity,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            8,
-                          ), // Set the corner radius
+                          borderRadius: BorderRadius.circular(8),
                           child: FlutterMap(
                             options: MapOptions(
                               center: LatLng(
-                                widget.device['latitude'] ??
-                                    51.509865, // Default latitude
-                                widget.device['longitude'] ??
-                                    -0.118092, // Default longitude
+                                widget.device['latitude'] ?? 51.229792,
+                                widget.device['longitude'] ?? 4.416118,
                               ),
-                              zoom: 13.0,
+                              zoom: 16.0,
                             ),
                             children: [
                               TileLayer(
@@ -158,8 +153,8 @@ class _DeviceDetailState extends State<DeviceDetail> {
                                     width: 80.0,
                                     height: 80.0,
                                     point: LatLng(
-                                      widget.device['latitude'] ?? 51.509865,
-                                      widget.device['longitude'] ?? -0.118092,
+                                      widget.device['latitude'] ?? 51.229792,
+                                      widget.device['longitude'] ?? 4.416118,
                                     ),
                                     builder:
                                         (ctx) => Icon(

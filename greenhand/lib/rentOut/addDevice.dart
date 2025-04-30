@@ -4,9 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:greenhand/services/firestoreService.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 
 class Adddevice extends StatefulWidget {
   const Adddevice({super.key});
@@ -29,6 +32,9 @@ class _AddDeviceState extends State<Adddevice> {
   bool formComplete = false;
 
   XFile? deviceImage;
+
+  double? latitude;
+  double? longitude;
 
   @override
   void initState() {
@@ -96,10 +102,7 @@ class _AddDeviceState extends State<Adddevice> {
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
-                      // Navigate back to rent-out-dashboard
-                      Navigator.pop(
-                        context,
-                      ); // (Navigates back to the previous screen)
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF636B2F),
@@ -196,8 +199,6 @@ class _AddDeviceState extends State<Adddevice> {
                           ),
                 ),
               ),
-              SizedBox(height: 20),
-              // ToDo: Implement location
               SizedBox(height: 20),
               Row(
                 children: [
@@ -303,6 +304,152 @@ class _AddDeviceState extends State<Adddevice> {
                   hintText: "Price",
                 ),
               ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Text(
+                    "Location",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              SizedBox(height: 3),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // Fetch current location
+                        try {
+                          LocationPermission permission =
+                              await Geolocator.requestPermission();
+                          if (permission == LocationPermission.denied ||
+                              permission == LocationPermission.deniedForever) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Location permission denied"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          Position position =
+                              await Geolocator.getCurrentPosition(
+                                desiredAccuracy: LocationAccuracy.high,
+                              );
+
+                          setState(() {
+                            latitude = position.latitude;
+                            longitude = position.longitude;
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Current location selected"),
+                            ),
+                          );
+                        } catch (error) {
+                          print(error);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Failed to fetch location: $error"),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF636B2F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Text(
+                        "Use Current Location",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              height: 600,
+                              child: FlutterMap(
+                                options: MapOptions(
+                                  center: LatLng(
+                                    latitude ??
+                                        51.509865, // Default latitude if none is selected
+                                    longitude ??
+                                        -0.118092, // Default longitude if none is selected
+                                  ),
+                                  zoom: 13.0,
+                                  onTap: (tapPosition, point) {
+                                    setState(() {
+                                      latitude = point.latitude;
+                                      longitude = point.longitude;
+                                    });
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Location selected"),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                children: [
+                                  TileLayer(
+                                    urlTemplate:
+                                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                    subdomains: ['a', 'b', 'c'],
+                                  ),
+                                  MarkerLayer(
+                                    markers: [
+                                      if (latitude != null && longitude != null)
+                                        Marker(
+                                          width: 80.0,
+                                          height: 80.0,
+                                          point: LatLng(latitude!, longitude!),
+                                          builder:
+                                              (ctx) => Icon(
+                                                Icons.location_pin,
+                                                color: Colors.red,
+                                                size: 40,
+                                              ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF636B2F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Text(
+                        "Select on Map",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              if (latitude != null && longitude != null)
+                Text(
+                  "Selected Location: ($latitude, $longitude)",
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
               SizedBox(height: 15),
               Row(
                 children: [
@@ -440,6 +587,8 @@ class _AddDeviceState extends State<Adddevice> {
                                 "endDate": endDate!.toIso8601String(),
                                 "userId": userId,
                                 "imageUrl": imageUrl,
+                                "latitude": latitude,
+                                "longitude": longitude,
                               };
 
                               // 5. Send to service
@@ -461,6 +610,8 @@ class _AddDeviceState extends State<Adddevice> {
                                 startDate = null;
                                 endDate = null;
                                 deviceImage = null;
+                                latitude = null;
+                                longitude = null;
                               });
 
                               // ToDo: Enable navigation
@@ -495,7 +646,6 @@ class _AddDeviceState extends State<Adddevice> {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Firebase.initializeApp();
   runApp(MaterialApp(home: Adddevice()));
 }

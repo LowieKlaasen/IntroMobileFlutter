@@ -216,7 +216,7 @@ class _DeviceDetailState extends State<DeviceDetail> {
                             ),
                           ),
                           child: Text(
-                            "Reserve",
+                            "Borrow",
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),

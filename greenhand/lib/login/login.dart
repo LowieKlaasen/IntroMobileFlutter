@@ -33,7 +33,7 @@ class LoginScreen extends StatelessWidget {
               width: 200, // Set a fixed width for the button
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Signin()),
                   );

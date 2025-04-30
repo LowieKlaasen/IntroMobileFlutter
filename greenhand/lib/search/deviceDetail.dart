@@ -198,6 +198,29 @@ class _DeviceDetailState extends State<DeviceDetail> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 50),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // ToDo: Implement reserve functionality
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF636B2F),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 50,
+                            ),
+                          ),
+                          child: Text(
+                            "Reserve",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

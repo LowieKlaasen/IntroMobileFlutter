@@ -50,7 +50,7 @@ class _SigninState extends State<Signin> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.pop(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
                     );

@@ -19,17 +19,15 @@ class _HomeState extends State<Home> {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white, // Match background
-        statusBarIconBrightness: Brightness.dark, // Black icons
-        statusBarBrightness: Brightness.light, // For iOS
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
   }
 
   Future<void> signOutUser() async {
     await FirebaseAuth.instance.signOut();
-
-    // ToDo: Fix navigating after logging out
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -72,14 +70,10 @@ class _HomeState extends State<Home> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(7)),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15,
-                    ), // Only vertical padding
+                    padding: EdgeInsets.symmetric(vertical: 15),
                   ),
                   child: SizedBox(
-                    width:
-                        screenWidth *
-                        0.65, // Set a fixed width for both buttons
+                    width: screenWidth * 0.65,
                     child: Center(
                       child: Text(
                         "Search in area",
@@ -103,13 +97,10 @@ class _HomeState extends State<Home> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(7)),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15,
-                    ), // Only vertical padding
+                    padding: EdgeInsets.symmetric(vertical: 15),
                   ),
                   child: SizedBox(
-                    width:
-                        screenWidth * 0.65, // Same fixed width for consistency
+                    width: screenWidth * 0.65,
                     child: Center(
                       child: Text(
                         "Rent out",
@@ -127,8 +118,7 @@ class _HomeState extends State<Home> {
             right: 20,
             child: FloatingActionButton(
               onPressed: () {
-                // ToDo: Implement logout functionality
-                print("User logged out");
+                signOutUser();
               },
               backgroundColor: Color(0xFF636B2F),
               child: Icon(Icons.logout, color: Colors.white),

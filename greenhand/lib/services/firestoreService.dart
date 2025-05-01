@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -96,7 +98,8 @@ class FirestoreService {
             'price': doc['price'],
             'startDate': doc['startDate'],
             'endDate': doc['endDate'],
-            'imageUrl': doc['imageUrl'],
+            // 'imageUrl': doc['imageUrl'],
+            'imageUrl': await base64ToImage(doc['imageUrl']),
             'user_firstName': userName['firstName'] ?? '',
             'user_lastName': userName['lastName'] ?? '',
             'id': doc.id,
@@ -109,7 +112,28 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchItemsByUserId(String userId) async {
+  Future<XFile> base64ToImage(String base64) async {
+    try {
+      // Decode the Base64 string into bytes
+      Uint8List bytes = base64Decode(base64);
+
+      // Get the temporary directory to store the image
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/decoded_image.png';
+
+      // Write the bytes to a file
+      final file = File(filePath);
+      await file.writeAsBytes(bytes);
+
+      // Return the file as an XFile
+      return XFile(filePath);
+    } catch (e) {
+      print("Error converting Base64 to image: $e");
+      throw Exception("Failed to convert Base64 to image");
+    }
+  }
+
+  Future<List<Object>> fetchItemsByUserId(String userId) async {
     try {
       final snapshot =
           await _firestore
@@ -117,7 +141,7 @@ class FirestoreService {
               .where('userId', isEqualTo: userId)
               .get();
 
-      return snapshot.docs.map((doc) {
+      return snapshot.docs.map((doc) async {
         return {
           'name': doc['name'],
           'description': doc['description'],
@@ -126,6 +150,7 @@ class FirestoreService {
           'startDate': doc['startDate'],
           'endDate': doc['endDate'],
           'imageUrl': doc['imageUrl'],
+          // 'imageUrl': await base64ToImage(doc['imageUrl']),
         };
       }).toList();
     } catch (error) {

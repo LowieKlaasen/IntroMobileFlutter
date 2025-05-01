@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -569,20 +570,26 @@ class _AddDeviceState extends State<Adddevice> {
                               // (Temp ID for testing)
                               userId ??= "-12";
 
-                              // 3. Upload image
+                              // // 3. Upload image
+                              // String? imageUrl;
+                              // if (deviceImage != null) {
+                              //   imageUrl = await _firestoreService.uploadImage(
+                              //     deviceImage!,
+                              //   );
+                              //   if (imageUrl == null) {
+                              //     ScaffoldMessenger.of(context).showSnackBar(
+                              //       SnackBar(
+                              //         content: Text("Failed to upload image"),
+                              //       ),
+                              //     );
+                              //     imageUrl = "";
+                              //   }
+                              // }
+
+                              // 3. Convert image to base64
                               String? imageUrl;
                               if (deviceImage != null) {
-                                imageUrl = await _firestoreService.uploadImage(
-                                  deviceImage!,
-                                );
-                                if (imageUrl == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("Failed to upload image"),
-                                    ),
-                                  );
-                                  imageUrl = "";
-                                }
+                                imageUrl = imageToBase64(deviceImage!);
                               }
 
                               // 4. Device object
@@ -648,6 +655,16 @@ class _AddDeviceState extends State<Adddevice> {
         ),
       ),
     );
+  }
+
+  String imageToBase64(XFile image) {
+    try {
+      final bytes = File(image.path).readAsBytesSync();
+      return base64Encode(bytes);
+    } catch (e) {
+      print("Error converting image to Base64: $e");
+      return "";
+    }
   }
 }
 

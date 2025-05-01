@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -198,8 +200,25 @@ class _RentOutDashBoardState extends State<Rentoutdashboard> {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(8),
                     ),
-                    child: Image.network(
-                      item['imageUrl'],
+                    // child: Image.network(
+                    //   item['imageUrl'],
+                    //   height: 100,
+                    //   width: double.infinity,
+                    //   fit: BoxFit.cover,
+                    //   errorBuilder: (context, error, stackTrace) {
+                    //     return Container(
+                    //       height: 100,
+                    //       color: Colors.grey[300],
+                    //       child: const Icon(
+                    //         Icons.broken_image,
+                    //         color: Colors.grey,
+                    //         size: 40,
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+                    child: Image.memory(
+                      base64Decode(item['imageUrl']),
                       height: 100,
                       width: double.infinity,
                       fit: BoxFit.cover,

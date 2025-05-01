@@ -108,4 +108,29 @@ class FirestoreService {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchItemsByUserId(String userId) async {
+    try {
+      final snapshot =
+          await _firestore
+              .collection('devices')
+              .where('userId', isEqualTo: userId)
+              .get();
+
+      return snapshot.docs.map((doc) {
+        return {
+          'name': doc['name'],
+          'description': doc['description'],
+          'category': doc['category'],
+          'price': doc['price'],
+          'startDate': doc['startDate'],
+          'endDate': doc['endDate'],
+          'imageUrl': doc['imageUrl'],
+        };
+      }).toList();
+    } catch (error) {
+      print("Error fetching items by userId: $error");
+      return [];
+    }
+  }
 }

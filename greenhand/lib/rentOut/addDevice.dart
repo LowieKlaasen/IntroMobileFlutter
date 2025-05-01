@@ -91,6 +91,14 @@ class _AddDeviceState extends State<Adddevice> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -614,9 +622,8 @@ class _AddDeviceState extends State<Adddevice> {
                                 longitude = null;
                               });
 
-                              // ToDo: Enable navigation
                               // 8. Navigate
-                              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Rentoutdashboard()));
+                              Navigator.pop(context);
                             } catch (error) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

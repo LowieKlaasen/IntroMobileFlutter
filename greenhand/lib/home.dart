@@ -85,7 +85,7 @@ class _HomeState extends State<Home> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Rentoutdashboard(),

@@ -5,6 +5,7 @@ import 'package:greenhand/firebase_options.dart';
 import 'package:greenhand/login/login.dart';
 import 'package:greenhand/rentOut/rentOutDashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:greenhand/search/searchDashboard.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -63,7 +64,12 @@ class _HomeState extends State<Home> {
                 SizedBox(height: 100),
                 ElevatedButton(
                   onPressed: () {
-                    // ToDo: Navigate
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchDashboard(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF636B2F),

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:greenhand/search/searchByCategory.dart';
 import 'package:greenhand/services/firestoreService.dart';
 
 class CategoryPicker extends StatelessWidget {
@@ -15,26 +16,42 @@ class CategoryPicker extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-        child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 30),
-              Text(
-                "Choose Category",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
+      body: Stack(
+        children: [
+          // Main content
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  const Text(
+                    "Choose Category",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 36),
+                  ),
+                  const SizedBox(height: 42),
+                  Image(
+                    image: const AssetImage("assets/icon/GreenHand_Logo.png"),
+                    width: screenWidth * 0.35,
+                  ),
+                  const SizedBox(height: 21),
+                  Expanded(child: CategoryListWidget()),
+                ],
               ),
-              SizedBox(height: 42),
-              Image(
-                image: AssetImage("assets/icon/GreenHand_Logo.png"),
-                width: screenWidth * 0.35,
-              ),
-              SizedBox(height: 21),
-              Expanded(child: CategoryListWidget()),
-            ],
+            ),
           ),
-        ),
+          // Back button
+          Positioned(
+            top: 70,
+            left: 10,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to the previous screen
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -130,7 +147,14 @@ class _CategoryListState extends State<CategoryListWidget> {
               ),
               trailing: Icon(Icons.arrow_forward_ios, color: Color(0xFF636B2F)),
               onTap: () {
-                // ToDo: Navigate to devices with that category
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                            SearchByCategory(category: category['name']),
+                  ),
+                );
               },
             ),
           ),

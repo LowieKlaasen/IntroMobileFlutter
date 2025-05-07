@@ -158,4 +158,28 @@ class FirestoreService {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchListingsWithLocation() async {
+    try {
+      final snapshot = await _firestore.collection('devices').get();
+      return snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          'name': doc['name'],
+          'description': doc['description'],
+          'category': doc['category'],
+          'price': doc['price'],
+          'startDate': doc['startDate'],
+          'endDate': doc['endDate'],
+          'imageUrl': doc['imageUrl'],
+          'latitude': doc['latitude'],
+          'longitude': doc['longitude'],
+          'userId': doc['userId'],
+        };
+      }).toList();
+    } catch (error) {
+      print("Error fetching listings with location: $error");
+      return [];
+    }
+  }
 }

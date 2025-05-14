@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:convert'; // Import for base64 decoding
 
 class DeviceDetail extends StatefulWidget {
   final Map<String, dynamic> device;
@@ -46,20 +47,34 @@ class _DeviceDetailState extends State<DeviceDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  child: Image.network(
-                    widget.device['imageUrl'] ??
-                        "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
-                    width: double.infinity,
-                    height: 220,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.broken_image,
-                        size: 100,
-                        color: Colors.grey,
-                      );
-                    },
-                  ),
+                  child:
+                      widget.device['imageUrl'] != null
+                          ? Image.memory(
+                            base64Decode(widget.device['imageUrl']),
+                            width: double.infinity,
+                            height: 220,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.broken_image,
+                                size: 100,
+                                color: Colors.grey,
+                              );
+                            },
+                          )
+                          : Image.network(
+                            "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png",
+                            width: double.infinity,
+                            height: 220,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.broken_image,
+                                size: 100,
+                                color: Colors.grey,
+                              );
+                            },
+                          ),
                 ),
                 SizedBox(height: 20),
                 Padding(

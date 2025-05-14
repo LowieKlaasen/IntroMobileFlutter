@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:greenhand/borrow/borrowDevice.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -218,7 +219,14 @@ class _DeviceDetailState extends State<DeviceDetail> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // ToDo: Implement reserve functionality
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        BorrowDevice(device: widget.device),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF636B2F),

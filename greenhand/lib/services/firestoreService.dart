@@ -104,6 +104,7 @@ class FirestoreService {
             'user_firstName': userName['firstName'] ?? '',
             'user_lastName': userName['lastName'] ?? '',
             'id': doc.id,
+            'userId': doc['userId'],
           };
         }).toList(),
       );
@@ -181,6 +182,26 @@ class FirestoreService {
     } catch (error) {
       print("Error fetching listings with location: $error");
       return [];
+    }
+  }
+
+  Future<void> addBorrow({
+    required String deviceId,
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      await _firestore.collection('borrowings').add({
+        'deviceId': deviceId,
+        'userId': userId,
+        'startDate': startDate.toIso8601String(),
+        'endDate': endDate.toIso8601String(),
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+    } catch (error) {
+      print("Error adding borrow information: $error");
+      throw Exception("Failed to add borrow information");
     }
   }
 }

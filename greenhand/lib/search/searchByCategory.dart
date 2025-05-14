@@ -4,6 +4,7 @@ import 'package:greenhand/search/deviceDetail.dart';
 import 'package:greenhand/services/firestoreService.dart';
 import 'package:intl/intl.dart';
 import 'package:geocoding/geocoding.dart';
+import 'dart:convert';
 
 class SearchByCategory extends StatefulWidget {
   final String category;
@@ -139,19 +140,30 @@ class _SearchByCategoryState extends State<SearchByCategory> {
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    item['imageUrl'],
-                                    width: 110,
-                                    height: 110,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(
-                                        Icons.broken_image,
-                                        size: 40,
-                                        color: Color(0xFF636B2F),
-                                      );
-                                    },
-                                  ),
+                                  child:
+                                      item['imageUrl'] != null
+                                          ? Image.memory(
+                                            base64Decode(item['imageUrl']),
+                                            width: 110,
+                                            height: 110,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) {
+                                              return Icon(
+                                                Icons.broken_image,
+                                                size: 40,
+                                                color: Color(0xFF636B2F),
+                                              );
+                                            },
+                                          )
+                                          : Icon(
+                                            Icons.image_not_supported,
+                                            size: 40,
+                                            color: Color(0xFF636B2F),
+                                          ),
                                 ),
                                 SizedBox(width: 16),
                                 Expanded(
@@ -192,11 +204,10 @@ class _SearchByCategoryState extends State<SearchByCategory> {
                                           ),
                                           FutureBuilder<String>(
                                             future:
-                                            // ToDo: Store and get coördinates from db
-                                            getRegionAndCountryFromCoordinates(
-                                              51.229778,
-                                              4.417200,
-                                            ),
+                                                getRegionAndCountryFromCoordinates(
+                                                  item['latitude'],
+                                                  item['longitude'],
+                                                ),
                                             builder: (context, snapshot) {
                                               if (snapshot.connectionState ==
                                                   ConnectionState.waiting) {

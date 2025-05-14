@@ -98,8 +98,9 @@ class FirestoreService {
             'price': doc['price'],
             'startDate': doc['startDate'],
             'endDate': doc['endDate'],
-            // 'imageUrl': doc['imageUrl'],
-            'imageUrl': await base64ToImage(doc['imageUrl']),
+            'imageUrl': doc['imageUrl'],
+            'latitude': doc['latitude'] ?? 0.0, // Default to 0.0 if null
+            'longitude': doc['longitude'] ?? 0.0, // Default to 0.0 if null
             'user_firstName': userName['firstName'] ?? '',
             'user_lastName': userName['lastName'] ?? '',
             'id': doc.id,

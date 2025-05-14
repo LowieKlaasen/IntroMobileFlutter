@@ -386,7 +386,7 @@ class _AddDeviceState extends State<Adddevice> {
                         showModalBottomSheet(
                           context: context,
                           builder: (context) {
-                            return Container(
+                            return SizedBox(
                               height: 600,
                               child: FlutterMap(
                                 options: MapOptions(

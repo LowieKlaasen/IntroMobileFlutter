@@ -5,7 +5,7 @@ import 'package:greenhand/search/searchByCategory.dart';
 import 'package:greenhand/services/firestoreService.dart';
 
 class CategoryPicker extends StatelessWidget {
-  const CategoryPicker({Key? key}) : super(key: key);
+  const CategoryPicker({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +58,8 @@ class CategoryPicker extends StatelessWidget {
 }
 
 class CategoryListWidget extends StatefulWidget {
+  const CategoryListWidget({super.key});
+
   @override
   _CategoryListState createState() => _CategoryListState();
 }

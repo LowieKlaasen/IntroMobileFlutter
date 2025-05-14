@@ -8,7 +8,7 @@ import 'package:geocoding/geocoding.dart';
 class SearchByCategory extends StatefulWidget {
   final String category;
 
-  const SearchByCategory({Key? key, required this.category}) : super(key: key);
+  const SearchByCategory({super.key, required this.category});
 
   @override
   _SearchByCategoryState createState() => _SearchByCategoryState();
@@ -80,7 +80,7 @@ class _SearchByCategoryState extends State<SearchByCategory> {
         final country = placemarks[0].country ?? 'Country not found';
         final region =
             placemarks[0].subAdministrativeArea ?? 'Region not found';
-        return "${region}, ${country}";
+        return "$region, $country";
       }
       return 'Location not found';
     } catch (error) {

@@ -7,7 +7,7 @@ import 'package:latlong2/latlong.dart';
 class DeviceDetail extends StatefulWidget {
   final Map<String, dynamic> device;
 
-  const DeviceDetail({Key? key, required this.device}) : super(key: key);
+  const DeviceDetail({super.key, required this.device});
 
   @override
   _DeviceDetailState createState() => _DeviceDetailState();
@@ -128,7 +128,7 @@ class _DeviceDetailState extends State<DeviceDetail> {
                       ),
                       SizedBox(height: 8),
                       // OpenStreetMap Minimap
-                      Container(
+                      SizedBox(
                         height: 150,
                         width: double.infinity,
                         child: ClipRRect(

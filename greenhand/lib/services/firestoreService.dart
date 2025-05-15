@@ -63,7 +63,7 @@ class FirestoreService {
       final snapshot =
           await _firestore
               .collection('users')
-              .where('auth_id', isEqualTo: userId)
+              .where('userUID', isEqualTo: userId)
               .get();
 
       if (snapshot.docs.isNotEmpty) {

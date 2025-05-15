@@ -6,6 +6,7 @@ import 'package:greenhand/login/login.dart';
 import 'package:greenhand/rentOut/rentOutDashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:greenhand/search/searchDashboard.dart';
+import 'package:greenhand/borrow/myBorrowings.dart'; // Import MyBorrowings page
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -110,6 +111,35 @@ class _HomeState extends State<Home> {
                     child: Center(
                       child: Text(
                         "Rent out",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                MyBorrowings(), // Navigate to MyBorrowings
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF636B2F),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(7)),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  child: SizedBox(
+                    width: screenWidth * 0.65,
+                    child: Center(
+                      child: Text(
+                        "My Borrowings",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),

@@ -164,21 +164,28 @@ class FirestoreService {
   Future<List<Map<String, dynamic>>> fetchListingsWithLocation() async {
     try {
       final snapshot = await _firestore.collection('devices').get();
-      return snapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          'name': doc['name'],
-          'description': doc['description'],
-          'category': doc['category'],
-          'price': doc['price'],
-          'startDate': doc['startDate'],
-          'endDate': doc['endDate'],
-          'imageUrl': doc['imageUrl'],
-          'latitude': doc['latitude'],
-          'longitude': doc['longitude'],
-          'userId': doc['userId'],
-        };
-      }).toList();
+
+      return await Future.wait(
+        snapshot.docs.map((doc) async {
+          final userName = await fetchUserName(doc['userId']);
+
+          return {
+            'id': doc.id,
+            'name': doc['name'],
+            'description': doc['description'],
+            'category': doc['category'],
+            'price': doc['price'],
+            'startDate': doc['startDate'],
+            'endDate': doc['endDate'],
+            'imageUrl': doc['imageUrl'],
+            'latitude': doc['latitude'],
+            'longitude': doc['longitude'],
+            'userId': doc['userId'],
+            'user_firstName': userName['firstName'] ?? '',
+            'user_lastName': userName['lastName'] ?? '',
+          };
+        }).toList(),
+      );
     } catch (error) {
       print("Error fetching listings with location: $error");
       return [];

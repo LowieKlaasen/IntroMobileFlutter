@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestoreService.dart';
 
 class BorrowDevice extends StatefulWidget {
@@ -41,12 +42,17 @@ class _BorrowDeviceState extends State<BorrowDevice> {
   Future<void> _confirmBorrow() async {
     if (_startDate != null && _endDate != null) {
       try {
-        print("Device ID: ${widget.device['id']}");
-        print("User ID: ${widget.device['userId']}");
+        final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+        if (currentUserId == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("You must be logged in to borrow.")),
+          );
+          return;
+        }
 
         await _firestoreService.addBorrow(
-          deviceId: widget.device['id'], // Check if this is null
-          userId: widget.device['userId'], // Check if this is null
+          deviceId: widget.device['id'],
+          userId: currentUserId, // Use the logged-in user's ID
           startDate: _startDate!,
           endDate: _endDate!,
         );

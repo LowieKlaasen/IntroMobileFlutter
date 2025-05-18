@@ -211,4 +211,47 @@ class FirestoreService {
       throw Exception("Failed to add borrow information");
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchBorrowingsByUserId(
+    String userId,
+  ) async {
+    try {
+      print(userId);
+
+      final snapshot =
+          await _firestore
+              .collection('borrowings')
+              .where('userId', isEqualTo: userId)
+              .get();
+
+      return await Future.wait(
+        snapshot.docs.map((doc) async {
+          // Fetch device details
+          final deviceSnapshot =
+              await _firestore.collection('devices').doc(doc['deviceId']).get();
+          final deviceData = deviceSnapshot.data();
+
+          // Fetch owner details if device exists
+          Map<String, String> owner = {};
+          if (deviceData != null && deviceData['userId'] != null) {
+            owner = await fetchUserName(deviceData['userId']);
+          }
+
+          return {
+            'borrowingId': doc.id,
+            'deviceId': doc['deviceId'],
+            'startDate': doc['startDate'],
+            'endDate': doc['endDate'],
+            'createdAt': doc['createdAt'],
+            'device': deviceData,
+            'owner_firstName': owner['firstName'] ?? '',
+            'owner_lastName': owner['lastName'] ?? '',
+          };
+        }).toList(),
+      );
+    } catch (error) {
+      print("Error fetching borrowings by userId: $error");
+      return [];
+    }
+  }
 }

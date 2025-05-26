@@ -382,61 +382,58 @@ class _AddDeviceState extends State<Adddevice> {
                   SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return SizedBox(
-                              height: 600,
-                              child: FlutterMap(
-                                options: MapOptions(
-                                  center: LatLng(
-                                    latitude ??
-                                        51.509865, // Default latitude if none is selected
-                                    longitude ??
-                                        -0.118092, // Default longitude if none is selected
-                                  ),
-                                  zoom: 13.0,
-                                  onTap: (tapPosition, point) {
-                                    setState(() {
-                                      latitude = point.latitude;
-                                      longitude = point.longitude;
-                                    });
-                                    Navigator.pop(context);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text("Location selected"),
-                                      ),
-                                    );
-                                  },
+                      onPressed: () async {
+                        try {
+                          // Get current user ID
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("User not logged in")),
+                            );
+                            return;
+                          }
+
+                          // Fetch user info via FirestoreService
+                          final data = await _firestoreService.fetchUserInfo(
+                            user.uid,
+                          );
+
+                          if (data == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("User address not found")),
+                            );
+                            return;
+                          }
+
+                          if (data['latitude'] == null ||
+                              data['longitude'] == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "No home address coordinates found",
                                 ),
-                                children: [
-                                  TileLayer(
-                                    urlTemplate:
-                                        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                    subdomains: ['a', 'b', 'c'],
-                                  ),
-                                  MarkerLayer(
-                                    markers: [
-                                      if (latitude != null && longitude != null)
-                                        Marker(
-                                          width: 80.0,
-                                          height: 80.0,
-                                          point: LatLng(latitude!, longitude!),
-                                          builder:
-                                              (ctx) => Icon(
-                                                Icons.location_pin,
-                                                color: Colors.red,
-                                                size: 40,
-                                              ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
                               ),
                             );
-                          },
-                        );
+                            return;
+                          }
+
+                          setState(() {
+                            latitude = (data['latitude'] as num).toDouble();
+                            longitude = (data['longitude'] as num).toDouble();
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Home address location used"),
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Failed to fetch home address: $e"),
+                            ),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF636B2F),
@@ -446,11 +443,82 @@ class _AddDeviceState extends State<Adddevice> {
                         padding: EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Text(
-                        "Select on Map",
+                        "Use Home Address",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
+                  // Expanded(
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       showModalBottomSheet(
+                  //         context: context,
+                  //         builder: (context) {
+                  //           return SizedBox(
+                  //             height: 600,
+                  //             child: FlutterMap(
+                  //               options: MapOptions(
+                  //                 center: LatLng(
+                  //                   latitude ??
+                  //                       51.509865, // Default latitude if none is selected
+                  //                   longitude ??
+                  //                       -0.118092, // Default longitude if none is selected
+                  //                 ),
+                  //                 zoom: 13.0,
+                  //                 onTap: (tapPosition, point) {
+                  //                   setState(() {
+                  //                     latitude = point.latitude;
+                  //                     longitude = point.longitude;
+                  //                   });
+                  //                   Navigator.pop(context);
+                  //                   ScaffoldMessenger.of(context).showSnackBar(
+                  //                     SnackBar(
+                  //                       content: Text("Location selected"),
+                  //                     ),
+                  //                   );
+                  //                 },
+                  //               ),
+                  //               children: [
+                  //                 TileLayer(
+                  //                   urlTemplate:
+                  //                       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  //                   subdomains: ['a', 'b', 'c'],
+                  //                 ),
+                  //                 MarkerLayer(
+                  //                   markers: [
+                  //                     if (latitude != null && longitude != null)
+                  //                       Marker(
+                  //                         width: 80.0,
+                  //                         height: 80.0,
+                  //                         point: LatLng(latitude!, longitude!),
+                  //                         builder:
+                  //                             (ctx) => Icon(
+                  //                               Icons.location_pin,
+                  //                               color: Colors.red,
+                  //                               size: 40,
+                  //                             ),
+                  //                       ),
+                  //                   ],
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           );
+                  //         },
+                  //       );
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: Color(0xFF636B2F),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.all(Radius.circular(7)),
+                  //       ),
+                  //       padding: EdgeInsets.symmetric(vertical: 15),
+                  //     ),
+                  //     child: Text(
+                  //       "Select on Map",
+                  //       style: TextStyle(color: Colors.white),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(height: 10),

@@ -254,4 +254,18 @@ class FirestoreService {
       return [];
     }
   }
+
+  Future<Map<String, dynamic>?> fetchUserInfo(String userId) async {
+    try {
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (doc.exists) {
+        return doc.data();
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user info: $e");
+      return null;
+    }
+  }
 }

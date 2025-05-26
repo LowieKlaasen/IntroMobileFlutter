@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:greenhand/firebase_options.dart';
 import 'package:greenhand/login/login.dart';
 
@@ -21,6 +22,11 @@ class _SignupState extends State<Signup> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  final TextEditingController streetController = TextEditingController();
+  final TextEditingController postalCodeController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
+
   @override
   void dispose() {
     firstNameController.dispose();
@@ -28,6 +34,10 @@ class _SignupState extends State<Signup> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    streetController.dispose();
+    postalCodeController.dispose();
+    cityController.dispose();
+    countryController.dispose();
     super.dispose();
   }
 
@@ -202,6 +212,94 @@ class _SignupState extends State<Signup> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "Street and Number",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: streetController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Street and number",
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "Postal Code",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: postalCodeController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Postal code",
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "City",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: cityController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "City",
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: EdgeInsets.only(left: 30),
+                  child: Text(
+                    "Country",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                  child: TextField(
+                    controller: countryController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Country",
+                    ),
+                  ),
+                ),
                 SizedBox(height: 100),
                 Padding(
                   padding: EdgeInsets.only(left: 30, right: 30),
@@ -216,6 +314,10 @@ class _SignupState extends State<Signup> {
                           emailController.text,
                           passwordController.text,
                           confirmPasswordController.text,
+                          streetController.text,
+                          postalCodeController.text,
+                          cityController.text,
+                          countryController.text,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -248,11 +350,37 @@ Future<void> signUp(
   String email,
   String password,
   String passwordAgain,
+  String street,
+  String postalCode,
+  String city,
+  String country,
 ) async {
   if (password != passwordAgain) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Passwords do not match')));
+    return;
+  }
+
+  String fullAddress = '$street, $postalCode $city, $country';
+  double? latitude;
+  double? longitude;
+
+  try {
+    List<Location> locations = await locationFromAddress(fullAddress);
+    if (locations.isNotEmpty) {
+      latitude = locations.first.latitude;
+      longitude = locations.first.longitude;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not find location for the address')),
+      );
+      return;
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Could not find location for the address')),
+    );
     return;
   }
 
@@ -270,6 +398,15 @@ Future<void> signUp(
           'lastName': lastName,
           'email': email,
           'userUID': credential.user?.uid,
+          'address': {
+            'street': street,
+            'postalCode': postalCode,
+            'city': city,
+            'country': country,
+            'full': fullAddress,
+          },
+          'latitude': latitude,
+          'longitude': longitude,
         });
 
     Navigator.pushReplacement(
@@ -282,7 +419,6 @@ Future<void> signUp(
     ).showSnackBar(SnackBar(content: Text('Account created succesfully')));
   } on FirebaseAuthException catch (ex) {
     String errorMessage;
-
     if (ex.code == 'email-already-in-use') {
       errorMessage = 'Already an account with that email address';
     } else if (ex.code == 'invalid-email') {
@@ -292,7 +428,6 @@ Future<void> signUp(
     } else {
       errorMessage = 'An error occurred. Please try again later';
     }
-
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(errorMessage)));

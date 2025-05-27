@@ -21,9 +21,14 @@ class _BorrowDeviceState extends State<BorrowDevice> {
     final DateTime deviceStartDate = DateTime.parse(widget.device['startDate']);
     final DateTime deviceEndDate = DateTime.parse(widget.device['endDate']);
 
+    // Ensure initialDate is not before firstDate
+    final DateTime now = DateTime.now();
+    final DateTime initialDate =
+        now.isBefore(deviceStartDate) ? deviceStartDate : now;
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initialDate,
       firstDate: deviceStartDate,
       lastDate: deviceEndDate,
     );

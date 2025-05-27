@@ -5,12 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greenhand/services/firestoreService.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:latlong2/latlong.dart';
 
 class Adddevice extends StatefulWidget {
   const Adddevice({super.key});
@@ -42,9 +40,9 @@ class _AddDeviceState extends State<Adddevice> {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white, // Match background
-        statusBarIconBrightness: Brightness.dark, // Black icons
-        statusBarBrightness: Brightness.light, // For iOS
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
     fetchCategories();
@@ -448,77 +446,6 @@ class _AddDeviceState extends State<Adddevice> {
                       ),
                     ),
                   ),
-                  // Expanded(
-                  //   child: ElevatedButton(
-                  //     onPressed: () {
-                  //       showModalBottomSheet(
-                  //         context: context,
-                  //         builder: (context) {
-                  //           return SizedBox(
-                  //             height: 600,
-                  //             child: FlutterMap(
-                  //               options: MapOptions(
-                  //                 center: LatLng(
-                  //                   latitude ??
-                  //                       51.509865, // Default latitude if none is selected
-                  //                   longitude ??
-                  //                       -0.118092, // Default longitude if none is selected
-                  //                 ),
-                  //                 zoom: 13.0,
-                  //                 onTap: (tapPosition, point) {
-                  //                   setState(() {
-                  //                     latitude = point.latitude;
-                  //                     longitude = point.longitude;
-                  //                   });
-                  //                   Navigator.pop(context);
-                  //                   ScaffoldMessenger.of(context).showSnackBar(
-                  //                     SnackBar(
-                  //                       content: Text("Location selected"),
-                  //                     ),
-                  //                   );
-                  //                 },
-                  //               ),
-                  //               children: [
-                  //                 TileLayer(
-                  //                   urlTemplate:
-                  //                       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  //                   subdomains: ['a', 'b', 'c'],
-                  //                 ),
-                  //                 MarkerLayer(
-                  //                   markers: [
-                  //                     if (latitude != null && longitude != null)
-                  //                       Marker(
-                  //                         width: 80.0,
-                  //                         height: 80.0,
-                  //                         point: LatLng(latitude!, longitude!),
-                  //                         builder:
-                  //                             (ctx) => Icon(
-                  //                               Icons.location_pin,
-                  //                               color: Colors.red,
-                  //                               size: 40,
-                  //                             ),
-                  //                       ),
-                  //                   ],
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           );
-                  //         },
-                  //       );
-                  //     },
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: Color(0xFF636B2F),
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.all(Radius.circular(7)),
-                  //       ),
-                  //       padding: EdgeInsets.symmetric(vertical: 15),
-                  //     ),
-                  //     child: Text(
-                  //       "Select on Map",
-                  //       style: TextStyle(color: Colors.white),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
               SizedBox(height: 10),

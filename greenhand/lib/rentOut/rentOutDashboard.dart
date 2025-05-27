@@ -38,8 +38,7 @@ class _RentOutDashBoardState extends State<Rentoutdashboard> {
       });
     });
 
-    // ToDo: Make rentedToday dynamic
-    rentedToday = "2";
+    rentedToday = "0";
   }
 
   Future<List<Map<String, dynamic>>> fetchItemsByUserId(String userId) async {
@@ -69,9 +68,7 @@ class _RentOutDashBoardState extends State<Rentoutdashboard> {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle, size: 30),
-            onPressed: () {
-              // ToDo: Navigate to profile page
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -200,23 +197,6 @@ class _RentOutDashBoardState extends State<Rentoutdashboard> {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(8),
                     ),
-                    // child: Image.network(
-                    //   item['imageUrl'],
-                    //   height: 100,
-                    //   width: double.infinity,
-                    //   fit: BoxFit.cover,
-                    //   errorBuilder: (context, error, stackTrace) {
-                    //     return Container(
-                    //       height: 100,
-                    //       color: Colors.grey[300],
-                    //       child: const Icon(
-                    //         Icons.broken_image,
-                    //         color: Colors.grey,
-                    //         size: 40,
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
                     child: Image.memory(
                       base64Decode(item['imageUrl']),
                       height: 100,
@@ -296,9 +276,7 @@ class _RentOutDashBoardState extends State<Rentoutdashboard> {
             bottom: 8,
             right: 8,
             child: ElevatedButton(
-              onPressed: () {
-                // ToDo: Implement disable functionality
-              },
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[800],
                 shape: RoundedRectangleBorder(

@@ -172,8 +172,6 @@ Future<void> signIn(BuildContext context, String email, String password) async {
       email: email,
       password: password,
     );
-
-    // ToDo: Navigate to Dashboard
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => Home()),
